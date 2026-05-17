@@ -21,7 +21,7 @@ export default function Auth() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) setError(error.message)
-    else navigate('/onboarding')
+    else navigate('/dashboard')
   }
 
   async function handleSignUp(e) {
@@ -36,12 +36,12 @@ export default function Auth() {
     else setMessage('Check your email to confirm your account!')
   }
 
-  async function handleGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-    options: { redirectTo: `${window.location.origin}/onboarding` }
-    })
-  }
+ async function handleGoogle() {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: `${window.location.origin}/auth/callback` }
+  })
+}
 
   const inputCls = "w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all placeholder-gray-400 dark:placeholder-gray-600"
 

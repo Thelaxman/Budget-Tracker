@@ -5,15 +5,16 @@ import { supabase } from '../lib/supabase'
 import { useTheme } from '../context/ThemeContext'
 
 const navItems = [
-  { to: '/dashboard', icon: '▦', label: 'Dashboard' },
+  { to: '/dashboard',    icon: '▦', label: 'Dashboard' },
   { to: '/transactions', icon: '≡', label: 'Transactions' },
-  { to: '/recurring', icon: '↺', label: 'Recurring' },
-  { to: '/goals', icon: '◎', label: 'Goals' },
-  { to: '/reports', icon: '✉', label: 'Reports' },
+  { to: '/recurring',    icon: '↺', label: 'Recurring' },
+  { to: '/goals',        icon: '◎', label: 'Goals' },
+  { to: '/reports',      icon: '✉', label: 'Reports' },
 ]
 
 export default function Layout({ children, user }) {
   const [open, setOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const navigate = useNavigate()
   const { dark, setDark } = useTheme()
   const initials = user?.email?.slice(0, 2).toUpperCase() || '?'
@@ -55,33 +56,56 @@ export default function Layout({ children, user }) {
         ))}
       </nav>
 
-      {/* Bottom controls */}
-      <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800 space-y-0.5">
-        {/* User pill */}
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 mb-1">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-xs font-semibold">{initials}</span>
-          </div>
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{username}</span>
+      {/* Bottom — profile dropdown */}
+      <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800">
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(v => !v)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-xs font-semibold">{initials}</span>
+            </div>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate flex-1 text-left">{username}</span>
+            <span className="text-gray-400 text-xs">{profileOpen ? '▼' : '▲'}</span>
+          </button>
+
+          {/* Dropdown */}
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-full left-0 right-0 mb-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden z-50"
+              >
+                <button
+                  onClick={() => { navigate('/settings'); setProfileOpen(false); setOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                >
+                  <span className="text-base w-5 text-center">⚙️</span>
+                  Profile & settings
+                </button>
+                <button
+                  onClick={() => { setDark(d => !d); setProfileOpen(false) }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                >
+                  <span className="text-base w-5 text-center">{dark ? '☀️' : '🌙'}</span>
+                  {dark ? 'Light mode' : 'Dark mode'}
+                </button>
+                <div className="h-px bg-gray-100 dark:bg-gray-800 mx-3" />
+                <button
+                  onClick={signOut}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                >
+                  <span className="text-base w-5 text-center">→</span>
+                  Sign out
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* Dark mode toggle */}
-        <button
-          onClick={() => setDark(d => !d)}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 transition-all"
-        >
-          <span className="text-base w-5 text-center">{dark ? '☀️' : '🌙'}</span>
-          {dark ? 'Light mode' : 'Dark mode'}
-        </button>
-
-        {/* Sign out */}
-        <button
-          onClick={signOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-red-500 transition-all"
-        >
-          <span className="text-base w-5 text-center">→</span>
-          Sign out
-        </button>
       </div>
     </div>
   )

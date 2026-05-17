@@ -12,6 +12,7 @@ import Recurring from './pages/Recurring'
 import Goals from './pages/Goals'
 import Reports from './pages/Reports'
 import AuthCallback from './pages/AuthCallback'
+import Settings from './pages/Settings'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/goals" element={<Goals />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

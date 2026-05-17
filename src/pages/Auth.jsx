@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useTheme } from '../context/ThemeContext'
 
 export default function Auth() {
   const [tab, setTab] = useState('login')
@@ -12,6 +13,7 @@ export default function Auth() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { dark, setDark } = useTheme()
 
   async function handleSignIn(e) {
     e.preventDefault()
@@ -24,7 +26,7 @@ export default function Auth() {
 
   async function handleSignUp(e) {
     e.preventDefault()
-    setError(''); setMessage(''); 
+    setError(''); setMessage('')
     if (password !== confirm) { setError('Passwords do not match'); return }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return }
     setLoading(true)
@@ -41,8 +43,19 @@ export default function Auth() {
     })
   }
 
+  const inputCls = "w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all placeholder-gray-400 dark:placeholder-gray-600"
+
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex">
+
+      {/* Dark mode toggle — top right */}
+      <button
+        onClick={() => setDark(d => !d)}
+        className="fixed top-4 right-4 z-50 w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        {dark ? '☀️' : '🌙'}
+      </button>
+
       {/* Left panel */}
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-500 to-teal-400 flex-col justify-between p-12">
         <Link to="/" className="flex items-center gap-2">
@@ -66,7 +79,6 @@ export default function Auth() {
             </p>
           </motion.div>
 
-          {/* Feature pills */}
           <div className="flex flex-col gap-3">
             {[
               '📊 Visual spending insights',
@@ -103,19 +115,19 @@ export default function Auth() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
               <span className="text-white font-bold text-sm">B</span>
             </div>
-            <span className="font-semibold text-gray-900">Budget Tracker</span>
+            <span className="font-semibold text-gray-900 dark:text-white">Budget Tracker</span>
           </Link>
 
           {/* Tab toggle */}
-          <div className="flex bg-gray-100 rounded-full p-1 mb-8">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1 mb-8">
             {['login', 'signup'].map(t => (
               <button
                 key={t}
                 onClick={() => { setTab(t); setError(''); setMessage('') }}
                 className={`flex-1 py-2 text-sm font-medium rounded-full transition-all ${
                   tab === t
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 {t === 'login' ? 'Sign in' : 'Create account'}
@@ -131,103 +143,57 @@ export default function Auth() {
               exit={{ opacity: 0, x: tab === 'login' ? 10 : -10 }}
               transition={{ duration: 0.2 }}
             >
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                 {tab === 'login' ? 'Welcome back' : 'Create your account'}
               </h1>
               <p className="text-sm text-gray-400 mb-8">
-                {tab === 'login'
-                  ? 'Sign in to access your dashboard'
-                  : 'Start tracking your finances for free'}
+                {tab === 'login' ? 'Sign in to access your dashboard' : 'Start tracking your finances for free'}
               </p>
 
-              {/* Error / success */}
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl mb-5 font-medium"
-                >
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-xl mb-5 font-medium">
                   {error}
                 </motion.div>
               )}
               {message && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-xl mb-5 font-medium"
-                >
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                  className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-sm px-4 py-3 rounded-xl mb-5 font-medium">
                   {message}
                 </motion.div>
               )}
 
               <form onSubmit={tab === 'login' ? handleSignIn : handleSignUp}>
                 <div className="mb-4">
-                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    required
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Email address</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required className={inputCls} />
                 </div>
-
                 <div className="mb-4">
-                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Password</label>
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required className={inputCls} />
                 </div>
 
                 {tab === 'signup' && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="mb-4"
-                  >
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-                      Confirm password
-                    </label>
-                    <input
-                      type="password"
-                      value={confirm}
-                      onChange={e => setConfirm(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                    />
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-4">
+                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Confirm password</label>
+                    <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="••••••••" required className={inputCls} />
                   </motion.div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gray-900 text-white font-semibold py-3.5 rounded-full text-sm hover:bg-gray-700 transition-colors disabled:opacity-50 mt-2 mb-4"
-                >
+                <button type="submit" disabled={loading}
+                  className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold py-3.5 rounded-full text-sm hover:opacity-80 transition-opacity disabled:opacity-50 mt-2 mb-4">
                   {loading ? 'Please wait...' : tab === 'login' ? 'Sign in' : 'Create account'}
                 </button>
               </form>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-gray-100"></div>
+                <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800"></div>
                 <span className="text-xs text-gray-400">or</span>
-                <div className="flex-1 h-px bg-gray-100"></div>
+                <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800"></div>
               </div>
 
-              <button
-                onClick={handleGoogle}
-                className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-full py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
+              <button onClick={handleGoogle}
+                className="w-full flex items-center justify-center gap-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-full py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 18 18">
                   <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
                   <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>

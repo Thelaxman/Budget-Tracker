@@ -46,14 +46,6 @@ export default function Transactions() {
     description: '', amount: '', type: 'spending', cat: 'Groceries', date: today()
   })
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { navigate('/auth'); return }
-      setUser(user)
-      loadTransactions(user.id)
-    })
-  }, [])
-
   async function loadTransactions(uid) {
     const { data } = await supabase
       .from('transactions')
@@ -63,6 +55,14 @@ export default function Transactions() {
     setTransactions(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { navigate('/auth'); return }
+      setUser(user)
+      loadTransactions(user.id)
+    })
+  }, [navigate])
 
   function updateForm(key, val) {
     setForm(f => {

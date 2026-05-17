@@ -32,15 +32,6 @@ export default function Reports() {
   const catRef = useRef(null)
   const catChart = useRef(null)
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { navigate('/auth'); return }
-      setUser(user)
-      setEmail(user.email || '')
-      loadData(user.id)
-    })
-  }, [])
-
   async function loadData(uid) {
     const [tx, rec, g] = await Promise.all([
       supabase.from('transactions').select('*').eq('user_id', uid).order('date', { ascending: false }),
@@ -53,8 +44,16 @@ export default function Reports() {
     setLoading(false)
   }
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { navigate('/auth'); return }
+      setUser(user)
+      setEmail(user.email || '')
+      loadData(user.id)
+    })
+  }, [navigate])
+
   function getReportTx() {
-    const now = new Date()
     let from, to = new Date()
     if (period === 'biweekly') { from = new Date(); from.setDate(from.getDate() - 14) }
     else if (period === 'month') { from = new Date(curYear, curMonth, 1); to = new Date(curYear, curMonth + 1, 0) }
@@ -138,7 +137,7 @@ export default function Reports() {
       })
     }
     return () => { trendChart.current?.destroy(); catChart.current?.destroy() }
-  }, [loading, transactions, period, curMonth, curYear, fromDate, toDate])
+  }, [loading, months6, m6income, m6spending, topCats])
 
   function getPeriodLabel() {
     if (period === 'biweekly') return 'Last 2 weeks'

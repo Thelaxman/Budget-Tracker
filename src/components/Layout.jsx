@@ -11,18 +11,8 @@ const navItems = [
   { to: '/reports', icon: '✉', label: 'Reports' },
 ]
 
-export default function Layout({ children, user }) {
-  const [open, setOpen] = useState(false)
-  const navigate = useNavigate()
-  const initials = user?.email?.slice(0, 2).toUpperCase() || '?'
-  const username = user?.email?.split('@')[0] || 'Account'
-
-  async function signOut() {
-    await supabase.auth.signOut()
-    navigate('/')
-  }
-
-  const SidebarContent = () => (
+function SidebarContent({ initials, username, onClose, onSignOut }) {
+  return (
     <div className="flex flex-col h-full">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-100">
@@ -38,7 +28,7 @@ export default function Layout({ children, user }) {
           <NavLink
             key={item.to}
             to={item.to}
-            onClick={() => setOpen(false)}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
@@ -62,7 +52,7 @@ export default function Layout({ children, user }) {
           <span className="text-sm font-medium text-gray-700 truncate">{username}</span>
         </div>
         <button
-          onClick={signOut}
+          onClick={onSignOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-50 hover:text-red-500 transition-all"
         >
           <span className="text-base w-5 text-center">→</span>
@@ -71,12 +61,24 @@ export default function Layout({ children, user }) {
       </div>
     </div>
   )
+}
+
+export default function Layout({ children, user }) {
+  const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const initials = user?.email?.slice(0, 2).toUpperCase() || '?'
+  const username = user?.email?.split('@')[0] || 'Account'
+
+  async function signOut() {
+    await supabase.auth.signOut()
+    navigate('/')
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
-        <SidebarContent />
+        <SidebarContent initials={initials} username={username} onClose={() => setOpen(false)} onSignOut={signOut} />
       </aside>
 
       {/* Mobile sidebar drawer */}
@@ -97,7 +99,7 @@ export default function Layout({ children, user }) {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed left-0 top-0 bottom-0 w-56 bg-white border-r border-gray-100 z-50 md:hidden"
             >
-              <SidebarContent />
+              <SidebarContent initials={initials} username={username} onClose={() => setOpen(false)} onSignOut={signOut} />
             </motion.aside>
           </>
         )}

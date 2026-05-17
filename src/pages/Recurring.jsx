@@ -54,14 +54,6 @@ export default function Recurring() {
     name: '', amount: '', cat: 'Subscription', freq: 'monthly', due: today()
   })
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { navigate('/auth'); return }
-      setUser(user)
-      loadItems(user.id)
-    })
-  }, [])
-
   async function loadItems(uid) {
     const { data } = await supabase
       .from('recurring')
@@ -71,6 +63,14 @@ export default function Recurring() {
     setItems(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { navigate('/auth'); return }
+      setUser(user)
+      loadItems(user.id)
+    })
+  }, [navigate])
 
   async function addItem(e) {
     e.preventDefault()

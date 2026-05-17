@@ -6,7 +6,6 @@ import Layout from '../components/Layout'
 import Chart from 'chart.js/auto'
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
-const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const CAT_COLORS = ['#1a6ef5','#0d9e8a','#c47b0a','#e53e3e','#7c3aed','#0891b2','#059669','#dc2626']
 
 function fmt(n) {
@@ -26,16 +25,6 @@ export default function Dashboard() {
   const donutChart = useRef(null)
   const barChart = useRef(null)
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { navigate('/auth'); return }
-      setUser(user)
-      const saved = localStorage.getItem(`ob_data_${user.id}`)
-      if (saved) setObData(JSON.parse(saved))
-      loadTransactions(user.id)
-    })
-  }, [])
-
   async function loadTransactions(uid) {
     const { data } = await supabase
       .from('transactions')
@@ -45,6 +34,16 @@ export default function Dashboard() {
     setTransactions(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { navigate('/auth'); return }
+      setUser(user)
+      const saved = localStorage.getItem(`ob_data_${user.id}`)
+      if (saved) setObData(JSON.parse(saved))
+      loadTransactions(user.id)
+    })
+  }, [navigate])
 
   const monthTx = transactions.filter(t => {
     const d = new Date(t.date + 'T00:00:00')
@@ -127,7 +126,7 @@ export default function Dashboard() {
       donutChart.current?.destroy()
       barChart.current?.destroy()
     }
-  }, [loading, curMonth, curYear, transactions])
+  }, [loading, catLabels, catVals, income, invest, savings, spending])
 
   const metrics = [
     { label: 'Income',      value: fmt(income),   color: 'text-blue-500',  bg: 'bg-blue-50',  icon: '↑', delta: null },

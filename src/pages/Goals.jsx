@@ -8,8 +8,6 @@ function fmt(n) {
   return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-function today() { return new Date().toISOString().slice(0, 10) }
-
 const GOAL_TYPES = [
   { id: 'savings', label: 'Savings', icon: '🐖', color: 'from-blue-500 to-blue-400', bg: 'bg-blue-50', text: 'text-blue-600', bar: 'bg-blue-500' },
   { id: 'investment', label: 'Investment', icon: '📈', color: 'from-teal-500 to-teal-400', bg: 'bg-teal-50', text: 'text-teal-600', bar: 'bg-teal-500' },
@@ -37,14 +35,6 @@ export default function Goals() {
     name: '', target: '', saved: '', type: 'savings'
   })
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { navigate('/auth'); return }
-      setUser(user)
-      loadGoals(user.id)
-    })
-  }, [])
-
   async function loadGoals(uid) {
     const { data } = await supabase
       .from('goals')
@@ -54,6 +44,14 @@ export default function Goals() {
     setGoals(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { navigate('/auth'); return }
+      setUser(user)
+      loadGoals(user.id)
+    })
+  }, [navigate])
 
   async function addGoal(e) {
     e.preventDefault()

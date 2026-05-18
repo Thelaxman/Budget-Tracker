@@ -1,173 +1,168 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+import { motion, useInView } from 'framer-motion'
+import { useTheme } from '../context/ThemeContext'
 
 const features = [
-  { icon: '💰', title: 'Track every dollar', desc: 'Log income, spending, savings and investments in one place. Know exactly where your money goes.' },
-  { icon: '📊', title: 'Spending insights', desc: 'Visual charts and trends show your habits over time. Spot patterns and cut what you don\'t need.' },
-  { icon: '🎯', title: 'Set & hit goals', desc: 'Create savings and investment goals with progress tracking. Stay motivated with visual milestones.' },
-  { icon: '🔁', title: 'Recurring expenses', desc: 'Track subscriptions, rent, and bills automatically. Never lose track of your fixed monthly costs.' },
-  { icon: '📬', title: 'Bi-weekly reports', desc: 'Get a clean summary of your finances emailed to you every two weeks. Stay on top effortlessly.' },
-  { icon: '🔒', title: 'Private & secure', desc: 'Your data is yours. Hosted on AWS with Supabase row-level security. No ads, no selling your data.' },
+  { headline: 'Know where\nevery dollar\ngoes.', sub: 'Log income, spending, savings and investments in seconds. Your full financial picture, always in view.' },
+  { headline: 'Never miss\na bill again.', sub: 'Track every subscription, rent and recurring expense. Payments log automatically when due.' },
+  { headline: 'Set goals.\nHit them.', sub: 'Create savings and investment targets. Watch your progress grow with every dollar you add.' },
+  { headline: 'Reports that\nactually help.', sub: 'Bi-weekly summaries land in your inbox. Spending trends, savings rate and financial health at a glance.' },
 ]
 
-const stats = [
-  { value: '100%', label: 'Free to use' },
-  { value: '$0',   label: 'Hidden fees' },
-  { value: '6',    label: 'Months of insights' },
-]
+function FeatureSection({ section, index }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const { dark } = useTheme()
+  const isLeft = index % 2 === 0
+  const tp = dark ? '#eef0f4' : '#1a1a2e'
+  const ts = dark ? '#8892a4' : '#4a4a6a'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0 },
+  return (
+    <section ref={ref} style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 48px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 80, maxWidth: 860, width: '100%', flexDirection: isLeft ? 'row' : 'row-reverse' }}>
+        <motion.div initial={{ opacity: 0, x: isLeft ? -40 : 40 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.7 }} style={{ flex: 1, maxWidth: 360 }}>
+          <h2 style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', color: tp, marginBottom: 16, whiteSpace: 'pre-line' }}>{section.headline}</h2>
+          <p style={{ fontSize: 16, lineHeight: 1.7, color: ts }}>{section.sub}</p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.6, delay: 0.1 }} style={{ flexShrink: 0, width: 160, height: 160, borderRadius: '50%', background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)', border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 72, fontWeight: 900, color: dark ? 'rgba(255,255,255,0.06)' : 'rgba(26,26,46,0.08)', letterSpacing: '-0.04em' }}>
+          0{index + 1}
+        </motion.div>
+      </div>
+    </section>
+  )
 }
 
 export default function Landing() {
+  const { dark, setDark } = useTheme()
+
+  const bg = dark
+    ? 'linear-gradient(160deg,#16131f 0%,#1a1728 40%,#1c1830 100%)'
+    : 'linear-gradient(160deg,#e8e4f8 0%,#f0eeff 40%,#e4dff8 100%)'
+  const tp = dark ? '#eef0f4' : '#1a1a2e'
+  const ts = dark ? '#8892a4' : '#4a4a6a'
+  const navBg = dark ? 'rgba(22,19,31,0.85)' : 'rgba(232,228,248,0.75)'
+  const glassBg = dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)'
+  const glassBorder = dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'
+
   return (
-    <div className="bg-white dark:bg-gray-950 min-h-screen transition-colors duration-200">
-      <Navbar />
+    <div style={{ background: bg, minHeight: '100vh', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', transition: 'background 0.3s' }}>
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-6"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-            Free • No credit card required
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6"
-          >
-            Take control of{' '}
-            <span className="bg-gradient-to-r from-blue-500 to-teal-400 bg-clip-text text-transparent">
-              your money
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
-            Budget Tracker helps you understand where your money goes, build better habits,
-            and reach your financial goals — all in one beautiful dashboard.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 justify-center"
-          >
-            <Link to="/auth" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-3.5 rounded-full font-medium text-sm hover:opacity-80 transition-opacity">
-              Start tracking for free →
-            </Link>
-            <a href="#features" className="border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 px-8 py-3.5 rounded-full font-medium text-sm hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
-              See how it works
-            </a>
-          </motion.div>
-        </div>
-
-        {/* Dashboard preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="max-w-4xl mx-auto mt-16"
-        >
-          <div className="bg-gradient-to-b from-gray-50 dark:from-gray-900 to-white dark:to-gray-950 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-xl shadow-gray-100 dark:shadow-gray-900">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-              {[
-                { label: 'Income',   value: '$5,200', color: 'text-blue-500',  bg: 'bg-blue-50 dark:bg-blue-900/20' },
-                { label: 'Spending', value: '$2,840', color: 'text-red-500',   bg: 'bg-red-50 dark:bg-red-900/20' },
-                { label: 'Savings',  value: '$1,200', color: 'text-teal-500',  bg: 'bg-teal-50 dark:bg-teal-900/20' },
-                { label: 'Balance',  value: '$1,160', color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
-              ].map((card, i) => (
-                <motion.div key={card.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.08 }}
-                  className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
-                  <div className={`w-7 h-7 ${card.bg} rounded-lg mb-2`}></div>
-                  <div className="text-xs text-gray-400 font-medium mb-1">{card.label}</div>
-                  <div className={`text-lg font-bold ${card.color}`}>{card.value}</div>
-                </motion.div>
-              ))}
-            </div>
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
-              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Monthly overview</div>
-              <div className="flex items-end gap-2 h-24">
-                {[60,85,45,70,55,90,65,80,50,75,88,62].map((h, i) => (
-                  <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: 0.6 + i * 0.04, duration: 0.4 }}
-                    className={`flex-1 rounded-t-md ${i % 2 === 0 ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-teal-100 dark:bg-teal-900/30'}`} />
-                ))}
-              </div>
-              <div className="flex justify-between mt-2">
-                {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
-                  <span key={m} className="text-xs text-gray-300 dark:text-gray-600 flex-1 text-center">{m}</span>
-                ))}
-              </div>
-            </div>
+      {/* Navbar */}
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: navBg, backdropFilter: 'blur(16px)', borderBottom: `0.5px solid ${glassBorder}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 30, height: 30, borderRadius: 8, background: tp, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: dark ? '#1a1a2e' : '#fff', fontWeight: 800, fontSize: 10 }}>BT</span>
           </div>
+          <span style={{ fontWeight: 700, fontSize: 14, color: tp }}>Budget Tracker</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => setDark(d => !d)} style={{ width: 32, height: 32, borderRadius: 8, background: glassBg, border: `0.5px solid ${glassBorder}`, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {dark ? '☀️' : '🌙'}
+          </button>
+          <Link to="/auth" style={{ fontSize: 13, fontWeight: 500, color: ts, textDecoration: 'none' }}>Sign in</Link>
+          <Link to="/auth" style={{ background: tp, color: dark ? '#1a1a2e' : '#fff', padding: '8px 18px', borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>Get started</Link>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section style={{ paddingTop: 100, paddingBottom: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', overflow: 'hidden' }}>
+
+        {/* Badge */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: glassBg, border: `0.5px solid ${glassBorder}`, borderRadius: 999, padding: '6px 16px', fontSize: 12, fontWeight: 600, color: '#6366f1', marginBottom: 24 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6366f1', display: 'inline-block' }} />
+          Free · No credit card required
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ fontSize: 'clamp(48px,7vw,88px)', fontWeight: 900, lineHeight: 1.0, letterSpacing: '-0.04em', color: tp, marginBottom: 20, padding: '0 24px' }}>
+          BUDGET<br />
+          <span style={{ WebkitTextStroke: `3px ${tp}`, color: 'transparent' }}>SMARTER.</span><br />
+          LIVE BETTER.
+        </motion.h1>
+
+        {/* Sub */}
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+          style={{ fontSize: 16, lineHeight: 1.7, color: ts, maxWidth: 420, margin: '0 auto 32px', padding: '0 24px' }}>
+          Track spending, set goals, and build better money habits — all in one beautiful dashboard.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+          style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 56 }}>
+          <Link to="/auth" style={{ background: tp, color: dark ? '#1a1a2e' : '#fff', padding: '13px 32px', borderRadius: 999, fontSize: 15, fontWeight: 700, textDecoration: 'none', letterSpacing: '-0.01em' }}>
+            Start for free →
+          </Link>
+          <a href="#features" style={{ background: glassBg, color: tp, padding: '13px 32px', borderRadius: 999, fontSize: 15, fontWeight: 600, textDecoration: 'none', border: `0.5px solid ${glassBorder}` }}>
+            See how it works
+          </a>
+        </motion.div>
+
+        {/* Device mockups */}
+        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.4 }}
+          style={{ position: 'relative', width: '88%', maxWidth: 680, margin: '0 auto', paddingBottom: 80, paddingRight: 60 }}>
+          {/* Laptop */}
+          <img src="/455shots_so.png" alt="Budget Tracker on MacBook"
+            style={{ width: '100%', height: 'auto', display: 'block', filter: 'drop-shadow(0 24px 48px rgba(99,102,241,0.2))' }} />
+          {/* Phone — hard positioned relative to laptop container */}
+          <img src="/991shots_so.png" alt="Budget Tracker on iPhone"
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: '30%',
+              height: 'auto',
+              filter: 'drop-shadow(0 20px 40px rgba(99,102,241,0.4))',
+            }} />
         </motion.div>
       </section>
 
-      {/* Stats */}
-      <section className="py-16 px-6 border-y border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-3xl mx-auto grid grid-cols-3 gap-8 text-center">
-          {stats.map((s, i) => (
-            <motion.div key={s.label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{s.value}</div>
-              <div className="text-sm text-gray-400">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything you need to budget smarter
-            </h2>
-            <p className="text-gray-400 text-base max-w-xl mx-auto">
-              No bloat, no complexity. Just the tools that actually help you manage money better.
-            </p>
+      {/* STATS */}
+      <section style={{ padding: '48px', display: 'flex', justifyContent: 'center', gap: 56, flexWrap: 'wrap', borderTop: `0.5px solid ${glassBorder}`, borderBottom: `0.5px solid ${glassBorder}`, background: glassBg, marginTop: 40 }}>
+        {[{ value: '100%', label: 'Free to use' }, { value: '$0', label: 'Hidden fees' }, { value: '6mo', label: 'Of insights' }, { value: '∞', label: 'Transactions' }].map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-0.03em', color: tp, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 13, color: ts, marginTop: 4, fontWeight: 500 }}>{s.label}</div>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((f, i) => (
-              <motion.div key={f.title} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-md transition-all">
-                <div className="text-3xl mb-4">{f.icon}</div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        ))}
       </section>
 
-      {/* CTA */}
-      <section className="py-24 px-6">
-        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
-          className="max-w-2xl mx-auto text-center bg-gradient-to-br from-blue-500 to-teal-400 rounded-3xl p-12">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to take control?</h2>
-          <p className="text-blue-100 mb-8 text-base">Track smarter, spend less, and save more.</p>
-          <Link to="/auth" className="inline-block bg-white text-blue-600 font-semibold px-8 py-3.5 rounded-full text-sm hover:bg-blue-50 transition-colors">
+      {/* FEATURES */}
+      <div id="features">
+        {features.map((section, i) => <FeatureSection key={i} section={section} index={i} />)}
+      </div>
+
+      {/* FINAL CTA */}
+      <section style={{ padding: '100px 48px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <h2 style={{ fontSize: 'clamp(36px,5.5vw,68px)', fontWeight: 900, letterSpacing: '-0.04em', color: tp, lineHeight: 1.05, marginBottom: 16 }}>
+            TAKE CONTROL<br />
+            <span style={{ WebkitTextStroke: `2.5px ${tp}`, color: 'transparent' }}>OF YOUR MONEY.</span>
+          </h2>
+          <p style={{ fontSize: 16, color: ts, marginBottom: 32, maxWidth: 360, margin: '0 auto 32px' }}>
+            Free forever. No credit card. Start tracking in 60 seconds.
+          </p>
+          <Link to="/auth" style={{ display: 'inline-block', background: tp, color: dark ? '#1a1a2e' : '#fff', padding: '15px 40px', borderRadius: 999, fontSize: 15, fontWeight: 700, textDecoration: 'none', letterSpacing: '-0.01em' }}>
             Get started for free →
           </Link>
         </motion.div>
       </section>
 
-      <Footer />
+      {/* FOOTER */}
+      <footer style={{ borderTop: `0.5px solid ${glassBorder}`, padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 22, height: 22, borderRadius: 6, background: tp, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: dark ? '#1a1a2e' : '#fff', fontWeight: 800, fontSize: 8 }}>BT</span>
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 500, color: ts }}>Budget Tracker</span>
+        </div>
+        <span style={{ fontSize: 12, color: ts }}>© 2026 budget.cloudgeekpro.com</span>
+        <div style={{ display: 'flex', gap: 20 }}>
+          {['Privacy', 'Terms'].map(l => <a key={l} href="#" style={{ fontSize: 12, color: ts, textDecoration: 'none' }}>{l}</a>)}
+        </div>
+      </footer>
     </div>
   )
 }
